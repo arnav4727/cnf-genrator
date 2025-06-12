@@ -33,10 +33,16 @@ def index():
 def get_data():
     cnf = request.args.get("cnf")
     if not cnf:
-        cnf = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
-    if cnf not in data_store:
-        data_store[cnf] = generate_random_data(cnf)
+    # Generate new CNF and store it
+    cnf = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+    data_store[cnf] = generate_random_data(cnf)
     return jsonify(data_store[cnf])
+else:
+    # Only return if CNF already exists
+    if cnf in data_store:
+        return jsonify(data_store[cnf])
+    else:
+        return jsonify({"error": "Invalid CNF. Not found."}), 404
 
 if __name__ == "__main__":
     app.run(debug=True)
