@@ -1,9 +1,10 @@
+from flask_cors import CORS
 from flask import Flask, render_template, request, jsonify
 import random
 import string
 
 app = Flask(__name__)
-
+CORS(app)
 # In-memory CNF storage
 data_store = {}
 
