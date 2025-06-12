@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CNF Info Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 300px;
+      margin-bottom: 20px;
+    }
+    .card div {
+      margin: 8px 0;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="infoCard">
+    <div>Loading...</div>
+  </div>
+  <button onclick="refresh()">Generate New Info</button>
+
+  <script>
+    async function loadData(cnf = null) {
+      let url = "/api/data";
+      if (cnf) {
+        url += `?cnf=${cnf}`;
+      }
+      const response = await fetch(url);
+      const data = await response.json();
+      history.replaceState({}, '', `?cnf=${data.cnf}`);
+      document.getElementById('infoCard').innerHTML = `
+        <div><strong>CNF:</strong> ${data.cnf}</div>
+        <div><strong>Name:</strong> ${data.name}</div>
+        <div><strong>Card Number:</strong> ${data.cardNumber}</div>
+        <div><strong>Expiry:</strong> ${data.expiry}</div>
+        <div><strong>Address:</strong> ${data.address}</div>
+        <div><strong>Postcode:</strong> ${data.postcode}</div>
+      `;
+    }
+
+    function refresh() {
+      loadData(); // get new CNF
+    }
+
+    // Get CNF from URL if exists
+    const urlParams = new URLSearchParams(window.location.search);
+    const cnfFromUrl = urlParams.get("cnf");
+    loadData(cnfFromUrl);
+  </script>
+</body>
+</html>
