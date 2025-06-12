@@ -5,7 +5,7 @@ import string
 
 app = Flask(__name__)
 CORS(app)
-# In-memory CNF storage
+
 data_store = {}
 
 def generate_random_data(cnf):
@@ -32,23 +32,18 @@ def index():
 @app.route("/api/data", methods=["GET"])
 def get_data():
     cnf = request.args.get("cnf")
-    if not cnf:
-    # Generate new CNF and store it
-    cnf = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
-    data_store[cnf] = generate_random_data(cnf)
-    return jsonify(data_store[cnf])
-else:
-    # Only return if CNF already exists
-    if cnf in data_store:
-        return jsonify(data_store[cnf])
-    else:
-        return jsonify({"error": "Invalid CNF. Not found."}), 404
 
-if __name__ == "__main__":
-    app.run(debug=True)
+    if cnf:
+        if cnf in data_store:
+            return jsonify(data_store[cnf])
+        else:
+            return jsonify({"error": "Invalid CNF. Not found."}), 404
+    else:
+        cnf = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        data_store[cnf] = generate_random_data(cnf)
+        return jsonify(data_store[cnf])
 
 if __name__ == "__main__":
     import os
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=False, host="0.0.0.0", port=port)
-
